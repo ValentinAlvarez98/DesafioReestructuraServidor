@@ -1,5 +1,5 @@
 import express from 'express';
-import __dirname from './utils.js';
+import __dirname, { authToken } from './utils.js';
 import handlebars from 'express-handlebars';
 import {
       Server
@@ -67,33 +67,6 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(__dirname + '/public'));
 app.use('/', viewsRouter)
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+app.use('/api/products', authToken, productsRouter);
+app.use('/api/carts', authToken, cartsRouter);
 app.use('/api/sessions', sessionsRouter);
-
-let messages = [];
-
-io.on('connection', socket => {
-      console.log("Nuevo cliente conectado!");
-
-      socket.on('message', data => {
-
-            messages.push(data);
-            io.emit('messagesLogs', messages);
-            console.log(data);
-
-      });
-
-      socket.on('authenticated', data => {
-
-            socket.broadcast.emit('newUserConnected', data);
-
-      });
-
-      socket.on('disconnect', () => {
-
-            console.log("Cliente desconectado!");
-
-      });
-
-});

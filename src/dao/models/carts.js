@@ -6,7 +6,7 @@ const cartsSchema = mongoose.Schema({
       products: [{
             product: {
                   type: mongoose.Schema.Types.ObjectId,
-                  ref: "products", // Asegúrate de que el nombre aquí sea el mismo que el usado para el modelo de Product (products.js)
+                  ref: "products",
                   required: true,
             },
             quantity: {
@@ -19,6 +19,12 @@ const cartsSchema = mongoose.Schema({
             type: Number,
             required: true,
       },
+
+      date_created: {
+            type: Date,
+            default: Date.now(),
+      },
+
 });
 
 const cartsModel = mongoose.model(cartsCollection, cartsSchema);

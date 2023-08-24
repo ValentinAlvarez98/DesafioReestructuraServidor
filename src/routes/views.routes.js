@@ -8,15 +8,15 @@ import {
       validateData
 } from '../helpers/handleErrors.js';
 import {
+      createHash,
+} from '../utils.js';
+import {
       checkSession,
       ifSession,
       isAdmin,
       checkGithubSession,
       validateEmail
 } from '../helpers/handleSessions.js';
-import {
-      authToken
-} from '../utils.js';
 import Products from "../dao/dbManagers/products.js";
 import Carts from "../dao/dbManagers/carts.js";
 import Users from "../dao/dbManagers/users.js";
@@ -33,52 +33,6 @@ const productsFsManager = new ProductsFs();
 // Se crea el enrutador.
 const router = Router();
 
-// Ruta para mostrar el chatBox.
-router.get('/chat', checkSession, checkGithubSession, async (req, res) => {
-
-      try {
-
-            // Renderiza la vista chat.
-            res.render('chat');
-
-      } catch {
-
-            // Manejo de errores mediante la función handleTryError.
-            handleTryError(res, error);
-
-      };
-
-});
-
-// Ruta para mostrar los productos en tiempo real.
-router.get('/realtimeproducts', checkSession, checkGithubSession, async (req, res) => {
-
-      try {
-
-            const userData = req.cookies.userData;
-
-            // Obtiene todos los productos desde el fileManager.
-            let products = await productsFsManager.getAll();
-
-            // Valida si no hay productos y envía un mensaje de error al cliente.
-            validateData(!products, res, "No hay productos en la base de datos");
-
-            // Renderiza la vista realtimeproducts, pasando los productos como parámetro.
-            res.render('realtimeproducts', {
-                  products,
-                  userName: userData.first_name,
-                  userRole: userData.role
-            });
-
-      } catch (error) {
-
-            // Manejo de errores mediante la función handleTryError.
-            handleTryError(res, error);
-
-      };
-
-});
-
 // Ruta para obtener todos los productos o una cantidad limitada de productos.
 router.get('/', checkSession, checkGithubSession, async (req, res) => {
 
@@ -94,8 +48,8 @@ router.get('/', checkSession, checkGithubSession, async (req, res) => {
 
             const userData = req.cookies.userData;
 
-            // Se inicializa la variable isAdmin.
-            let isUser;
+            // Se inicializa la variable isuser.
+            let isUser = false;
 
             // Se valida si el usuario es user.
             userData.role === "user" ? isUser = true : isUser = false;
@@ -207,7 +161,6 @@ router.get('/carts/:cartId', checkSession, checkGithubSession, async (req, res) 
 
 });
 
-// Ruta para obtener el perfil del usuario.
 router.get('/profile', checkSession, async (req, res) => {
 
       try {
@@ -215,10 +168,6 @@ router.get('/profile', checkSession, async (req, res) => {
             const userData = req.cookies.userData;
 
             const id = userData.id;
-
-            const admin = isAdmin(userData.email, userData.password);
-
-            validateData(admin !== false, res, "No se puede acceder al perfil del usuario administrador");
 
             const user = await usersManager.getUser(null, id);
 

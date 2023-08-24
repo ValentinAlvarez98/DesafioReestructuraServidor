@@ -23,10 +23,8 @@
             <p>Precio: {{this.price}}</p>
             <img src="{{this.thumbnails.[0]}}" alt="{{this.title}}">
 
-            <form action="" method="put">
-                  <input type="hidden" name="productId" value="{{this.id}}">
-                  <input type="submit" value="Agregar al carrito">
-            </form>
+            
+            <button class="add-to-cart" data-product-id="{{this._id}}">Agregar al carrito</button>
 
             <a href="/products/{{this.id}}">Ver detalles</a>
       </li>
@@ -40,3 +38,5 @@
 {{#if hasPrevPage}}
 <a href="/?page={{prevPage}}">Anterior</a>
 {{/if}}
+
+<script src="/js/products.js" ></script>

@@ -77,39 +77,3 @@
 </div>
       
 <script src="/js/profile.js"></script>
-
-<script>
-
-const urlParams = new URLSearchParams(window.location.search);
-
-const token = urlParams.get('token');
-
-console.log(token);
-
-if (token) {
-      
-      fetch(`/api/sessions/githubToken?token=${token}`, {
-            method: 'POST',
-            headers: {
-                  'Content-Type': 'application/json',
-                  'authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-      }).then(response => {
-
-if (response.status === 200) {
-
-      response.json().then(data =>{
-            localStorage.setItem('token', data.token);
-            window.location.href = '/profile';
-      });
-      } else {
-            response.json().then(data => {
-                  console.log(data);
-            });
-      }
-      });
-
-} 
-
-
-</script>

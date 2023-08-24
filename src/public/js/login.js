@@ -8,6 +8,8 @@ form.addEventListener('submit', (e) => {
 
       const obj = {}
 
+      const token = localStorage.getItem('token');
+
       data.forEach((value, key) => {
             obj[key] = ['email'].includes(key) ? value.toLowerCase() : value;
       });
@@ -18,7 +20,7 @@ form.addEventListener('submit', (e) => {
             body: JSON.stringify(obj),
             headers: {
                   'Content-Type': 'application/json',
-                  'authorization': `Bearer ${localStorage.getItem('token')}`
+                  'Authorization': `Bearer ${token}`,
             }
 
       }).then(response => {
@@ -29,6 +31,8 @@ form.addEventListener('submit', (e) => {
 
                         localStorage.setItem('token', data.token);
 
+                        alert('Bienvenido');
+
                         window.location.href = '/';
 
                   });
@@ -37,7 +41,9 @@ form.addEventListener('submit', (e) => {
 
                   response.json().then(data => {
 
-                        console.log(data);
+                        alert("Error al iniciar sesión");
+
+                        throw new Error(data.payload);
 
                   });
 
@@ -46,5 +52,3 @@ form.addEventListener('submit', (e) => {
       });
 
 });
-
-const loginGitHub = document.getElementById('loginGitHub');

@@ -5,7 +5,8 @@ import passport from 'passport';
 
 import {
       createHash,
-      authToken
+      authToken,
+      validatePassword
 } from '../utils.js';
 
 import UsersManager from '../dao/dbManagers/users.js';
@@ -21,11 +22,13 @@ import {
       cfgSessionGithub,
       checkSession,
       isAdmin,
+      validateEmail,
 } from '../helpers/handleSessions.js';
 
 const usersManager = new UsersManager();
 
 const sessionsRouter = Router();
+
 
 sessionsRouter.post('/login', async (req, res) => {
 
@@ -43,6 +46,10 @@ sessionsRouter.post('/login', async (req, res) => {
             const user = await usersManager.loginUser(req.body);
 
             validateData(!user, res, "Error en el usuario o contraseña");
+
+            const isValidPassword = await validatePassword(user, password);
+
+            validateData(!isValidPassword, res, "Contraseña incorrecta");
 
             cfgSession(user, req, res);
 
@@ -83,18 +90,9 @@ sessionsRouter.get('/githubcallback', passport.authenticate('github', {
 
             const user = req.user;
 
-            const token = cfgSessionGithub(user, req, res);
+            cfgSessionGithub(user, req, res)
 
-            if (token) {
-
-                  res.redirect(`/profile?token=${token}`)
-
-            } else {
-
-                  res.redirect('/login');
-
-            };
-
+            res.redirect('/profile')
 
       } catch (error) {
 
@@ -104,20 +102,17 @@ sessionsRouter.get('/githubcallback', passport.authenticate('github', {
 
 });
 
-sessionsRouter.post('/githubToken', async (req, res) => {
+sessionsRouter.get('/githubToken', async (req, res) => {
 
       try {
 
-            const token = req.query.token;
+            const token = req.cookies.userData.token;
 
-            console.log(token);
-
-            res.status(201).json({
+            res.status(200).json({
                   status: "success",
-                  message: "Bienvenido",
+                  message: "Token obtenido correctamente",
                   token: token
             });
-
 
       } catch (error) {
 
@@ -140,7 +135,14 @@ sessionsRouter.post('/register', async (req, res) => {
                   confirmed_password
             } = req.body;
 
-            const isValid = validateFields(req.body, ['first_name', 'last_name', 'email', 'age', 'password', 'confirmed_password']);
+            const isValid = true;
+
+            for (const field of ['first_name', 'last_name', 'email', 'age', 'password', 'confirmed_password']) {
+                  if (!req.body[field]) {
+                        isValid = false;
+                        break;
+                  }
+            }
 
             validateData(!isValid, res, "Faltan campos obligatorios");
 

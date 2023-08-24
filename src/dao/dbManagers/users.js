@@ -86,6 +86,7 @@ export default class UsersManager {
 
             try {
 
+                  user.password = await createHash(user.password);
                   // Se verifica si el usuario es un administrador utilizando la función isAdmin.
                   const existAdmin = isAdmin(user.email, user.password);
 
@@ -101,8 +102,7 @@ export default class UsersManager {
                         // Se valida que el usuario administrador se haya guardado correctamente.
                         validateDataDB(!result, "No se pudo guardar el usuario en la base de datos");
 
-                        // Se programa un tiempo para eliminar al usuario administrador después de 3 segundos.
-                        setTimeout(() => this.deleteAdmin(user.email), 10000);
+                        setTimeout(() => this.deleteAdmin(user.email), 120000);
 
                         return result;
 
@@ -113,12 +113,6 @@ export default class UsersManager {
 
                         // Se muestra un mensaje de error si el usuario no existe en la base de datos.
                         validateDataDB(!exist, "El usuario no existe");
-
-                        // Se verifica si la contraseña es correcta.
-                        const isValidPassword = await validatePassword(exist, user.password);
-
-                        // Se muestra un mensaje de error si la contraseña es incorrecta.
-                        validateDataDB(!isValidPassword, "La contraseña es incorrecta");
 
                         return exist;
                   };

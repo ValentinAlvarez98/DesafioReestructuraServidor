@@ -42,7 +42,7 @@ export const authToken = (req, res, next) => {
 
                   return res.status(401).send({
                         status: 'error',
-                        error: 'No token provided'
+                        error: 'No se ha enviado el token de autenticación'
                   });
 
             };
@@ -55,7 +55,7 @@ export const authToken = (req, res, next) => {
 
                   if (error) return res.status(401).send({
                         status: "error",
-                        error: "Unauthorized"
+                        error: "No está autorizado para acceder a este recurso"
                   })
 
                   req.user = credentials.user;
@@ -66,10 +66,7 @@ export const authToken = (req, res, next) => {
 
       } catch (error) {
 
-            console.log(error);
-            res.status(500).json({
-                  error: 'Internal server error'
-            });
+            throw error;
 
       };
 

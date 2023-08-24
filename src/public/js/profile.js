@@ -13,20 +13,28 @@ form.addEventListener('submit', (e) => {
       });
 
       fetch('/api/sessions/profile', {
+
             method: 'POST',
             body: JSON.stringify(obj),
             headers: {
                   'Content-Type': 'application/json',
-                  'authorization': `Bearer ${localStorage.getItem('token')}`
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
+
       }).then(result => {
+
             if (result.status === 200) {
+
                   alert('Perfil actualizado correctamente');
                   window.location.href = '/profile';
+
             } else {
+
                   alert('Error al actualizar el perfil');
+
             };
-      })
+
+      });
 
 });
 
@@ -40,7 +48,8 @@ deleteForm.addEventListener('submit', (e) => {
 
             method: 'GET',
             headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('token')} `
             }
 
       }).then(response => {
@@ -61,7 +70,7 @@ deleteForm.addEventListener('submit', (e) => {
 
                   response.json().then(data => {
 
-                        console.log(data);
+                        throw new Error(data);
 
                   });
 
@@ -71,3 +80,35 @@ deleteForm.addEventListener('submit', (e) => {
       });
 
 });
+
+window.onload = function () {
+
+      if (!localStorage.getItem('token')) {
+
+            fetch('/api/sessions/githubToken', {
+
+                  method: 'GET',
+                  headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  }
+
+            }).then(response => {
+
+                  if (response.status === 200) {
+
+                        response.json().then(data => {
+                              localStorage.setItem('token', data.token);
+                        });
+
+                  } else {
+
+                        throw new Error('Error al obtener el token');
+
+                  };
+
+            });
+
+      }
+
+};

@@ -1,16 +1,6 @@
 export function validateFields(data, fieldsToValidate) {
 
-      const fields = fieldsToValidate;
-
-      for (const field of fields) {
-
-            if (!data[field]) {
-                  return false;
-            }
-
-      }
-
-      return true;
+      return fieldsToValidate.every(field => data[field]);
 
 }
 

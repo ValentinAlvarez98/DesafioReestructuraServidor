@@ -30,24 +30,20 @@ const initPassport = () => {
       });
 
       passport.use('github', new GitHubStrategy({
+
             clientID: cltId,
             clientSecret: cltSecret,
             callbackURL: cltURL,
+
       }, async (accessToken, refreshToken, profile, done) => {
-
             try {
-
                   const user = await userModel.findOne({
                         email: profile._json.email
                   });
 
                   if (user) {
-
                         return done(null, user);
-
                   } else {
-
-                        console.log(profile._json)
 
                         const first_name = profile._json.name.split(' ')[0];
                         const last_name = profile._json.name.split(' ')[1];
@@ -63,9 +59,7 @@ const initPassport = () => {
                         let result = await userModel.create(newUser);
 
                         return done(null, result);
-
                   };
-
             } catch (error) {
 
                   return done(error);

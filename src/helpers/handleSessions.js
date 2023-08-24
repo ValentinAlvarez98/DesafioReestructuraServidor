@@ -4,22 +4,39 @@ import {
       validatePassword
 } from '../utils.js';
 
+import env from '../config/environment/config.js';
+
 export function isAdmin(email, password) {
 
-      const admin = {
-            first_name: "Admin",
-            last_name: "Coder",
-            email: "admincoder@coder.com",
-            age: 0,
-            password: "adminCod3r123",
-            role: "admin"
-      };
+      const adminPass = process.env.ADMIN_PASSWORD;
 
-      const validPassword = validatePassword(admin, password);
+      const adminEmail = process.env.ADMIN_EMAIL;
 
-      if (email === admin.email && validPassword) {
+      if (adminEmail !== undefined && adminPass !== undefined) {
 
-            return admin;
+            const admin = {
+                  first_name: "Admin",
+                  last_name: "Coder",
+                  email: adminEmail,
+                  age: 0,
+                  password: createHash(adminPass),
+                  role: "admin"
+            };
+
+            const validEmail = email === adminEmail;
+
+            const validPassword = validatePassword(password, admin);
+
+            if (validPassword && validEmail) {
+
+                  return admin;
+
+            } else {
+
+                  return false;
+
+            };
+
       } else {
 
             return false;

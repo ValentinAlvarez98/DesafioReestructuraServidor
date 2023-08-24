@@ -10,6 +10,8 @@ import bcrypt, {
       genSaltSync
 } from 'bcrypt';
 
+import env from './config/environment/config.js';
+
 import jwt from 'jsonwebtoken';
 
 const __filename = fileURLToPath(
@@ -17,7 +19,7 @@ const __filename = fileURLToPath(
 
 const __dirname = dirname(__filename);
 
-const KEY = 'S3cr3tK3y'
+const KEY = process.env.KEY;
 
 export const generateToken = (user) => {
 
@@ -73,7 +75,7 @@ export const authToken = (req, res, next) => {
 };
 
 
-export const createHash = async (password) => {
+export const createHash = (password) => {
 
       const salt = bcrypt.genSaltSync(10);
 
@@ -83,7 +85,7 @@ export const createHash = async (password) => {
 
 }
 
-export const validatePassword = async (user, password) => {
+export const validatePassword = (password, user) => {
 
       const compare = bcrypt.compareSync(password, user.password);
 

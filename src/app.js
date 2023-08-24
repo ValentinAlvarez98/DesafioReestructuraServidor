@@ -1,5 +1,8 @@
 import express from 'express';
-import __dirname, { authToken } from './utils.js';
+import __dirname, {
+      authToken
+} from './utils.js';
+import env from './config/environment/config.js';
 import handlebars from 'express-handlebars';
 import {
       Server
@@ -8,7 +11,8 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
-import initPassport from './config/passport.config.js';
+import initPassport from './config/passport/passport.config.js';
+
 
 import productsRouter from './routes/products.routes.js';
 import cartsRouter from './routes/carts.routes.js';
@@ -18,7 +22,7 @@ import viewsRouter from './routes/views.routes.js';
 import mongoose from 'mongoose';
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT;
 
 const httpServer = app.listen(PORT, () => {
       console.log(`Servidor escuchando desde el puerto ${PORT}`);
@@ -29,7 +33,7 @@ export const io = new Server(httpServer);
 app.use(cookieParser());
 
 mongoose.set('strictQuery', false);
-const URL = 'mongodb+srv://valentinalvarez1998:UMGgkpPEVuR082JW@primera-practica-integr.2ja87xe.mongodb.net/?retryWrites=true&w=majority';
+const URL = process.env.MONGO_URL;
 
 mongoose.connect(URL, {
       useNewUrlParser: true,
@@ -45,7 +49,7 @@ app.use(session({
             },
             ttl: 15,
       }),
-      secret: 'C0d3rS3cr3tC0d3',
+      secret: process.env.SECRET,
       resave: false,
       saveUninitialized: false,
 }))

@@ -11,12 +11,6 @@ import {
 // Se crea la clase CartsManager.
 export default class CartsManager {
 
-      constructor() {
-
-            console.log("Trabajando con base de datos MongoDB");
-
-      };
-
       // Se crea el método getAll.
       getAll = async () => {
 

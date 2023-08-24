@@ -10,10 +10,6 @@ import {
 // Se crea la clase ProductsManager.
 export default class ProductsManager {
 
-      constructor() {
-            console.log("Trabajando con base de datos MongoDB");
-      };
-
       // Se crea getAll para obtener todos los productos de la base de datos.
       getAll = async ({
             limit = 10,

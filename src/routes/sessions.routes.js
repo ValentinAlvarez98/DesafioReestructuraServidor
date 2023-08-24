@@ -47,7 +47,7 @@ sessionsRouter.post('/login', async (req, res) => {
 
             validateData(!user, res, "Error en el usuario o contraseña");
 
-            const isValidPassword = await validatePassword(user, password);
+            const isValidPassword = validatePassword(password, user);
 
             validateData(!isValidPassword, res, "Contraseña incorrecta");
 
@@ -153,7 +153,7 @@ sessionsRouter.post('/register', async (req, res) => {
                   last_name,
                   email,
                   age,
-                  password: await createHash(password),
+                  password: createHash(password),
             };
 
             const result = await usersManager.registerUser(newUser);
@@ -218,7 +218,7 @@ sessionsRouter.post('/profile', authToken, async (req, res) => {
 
             const newPhone = phoneOptions(user.phone, phone);
 
-            const hashedPassword = await createHash(user.password);
+            const hashedPassword = createHash(user.password);
 
             const userToUpdate = {
                   ...req.body,

@@ -20,9 +20,6 @@ import {
 
 export default class UsersManager {
 
-      constructor() {
-            console.log("Trabajando con base de datos MongoDB");
-      };
 
       // Método para obtener un usuario por su dirección de correo electrónico.
       getUser = async (email, id) => {
@@ -86,15 +83,15 @@ export default class UsersManager {
 
             try {
 
-                  user.password = await createHash(user.password);
                   // Se verifica si el usuario es un administrador utilizando la función isAdmin.
                   const existAdmin = isAdmin(user.email, user.password);
+
+                  user.password = createHash(user.password);
 
                   if (existAdmin.role === "admin") {
 
                         const admin = {
-                              ...existAdmin,
-                              password: await createHash(existAdmin.password)
+                              ...existAdmin
                         }
                         // Si el usuario es un administrador, se crea y guarda en la base de datos.
                         const result = await usersModel.create(admin);

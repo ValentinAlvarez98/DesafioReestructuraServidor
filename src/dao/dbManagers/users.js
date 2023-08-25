@@ -83,36 +83,13 @@ export default class UsersManager {
 
             try {
 
-                  // Se verifica si el usuario es un administrador utilizando la función isAdmin.
-                  const existAdmin = isAdmin(user.email, user.password);
+                  // Si el usuario no es un administrador, se verifica si existe en la base de datos.
+                  const exist = await this.getUser(user.email, null);
 
-                  user.password = createHash(user.password);
+                  // Se muestra un mensaje de error si el usuario no existe en la base de datos.
+                  validateDataDB(!exist, "El usuario no existe");
 
-                  if (existAdmin.role === "admin") {
-
-                        const admin = {
-                              ...existAdmin
-                        }
-                        // Si el usuario es un administrador, se crea y guarda en la base de datos.
-                        const result = await usersModel.create(admin);
-
-                        // Se valida que el usuario administrador se haya guardado correctamente.
-                        validateDataDB(!result, "No se pudo guardar el usuario en la base de datos");
-
-                        setTimeout(() => this.deleteAdmin(user.email), 120000);
-
-                        return result;
-
-                  } else {
-
-                        // Si el usuario no es un administrador, se verifica si existe en la base de datos.
-                        const exist = await this.getUser(user.email, null);
-
-                        // Se muestra un mensaje de error si el usuario no existe en la base de datos.
-                        validateDataDB(!exist, "El usuario no existe");
-
-                        return exist;
-                  };
+                  return exist;
 
             } catch (error) {
 

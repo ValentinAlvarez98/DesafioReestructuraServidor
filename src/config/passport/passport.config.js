@@ -1,12 +1,13 @@
 import passport from 'passport';
 import userModel from '../../dao/models/users.js';
 import GitHubStrategy from 'passport-github2';
+import env from '../environment/config.js'
 
 const initPassport = () => {
 
-      const cltId = "Iv1.24cd048e80dae814";
-      const cltSecret = "a5268992d5eb8b27b95049287848d23f10a5ff02";
-      const cltURL = "http://localhost:8080/api/sessions/githubcallback";
+      const cltId = process.env.GITHUB_CLIENT_ID;
+      const cltSecret = process.env.GITHUB_CLIENT_SECRET;
+      const cltURL = process.env.GITHUB_CLIENT_URL;
 
       passport.serializeUser((user, done) => {
 

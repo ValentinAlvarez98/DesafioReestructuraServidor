@@ -169,6 +169,8 @@ router.get('/profile', checkSession, async (req, res) => {
 
             const id = userData.id;
 
+            if (userData.role === "admin") return res.redirect('/');
+
             const user = await usersManager.getUser(null, id);
 
             validateData(!user, res, "No se pudo obtener el perfil del usuario");

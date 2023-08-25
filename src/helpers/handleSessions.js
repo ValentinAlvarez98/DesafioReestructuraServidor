@@ -6,7 +6,29 @@ import {
 
 import env from '../config/environment/config.js';
 
-export function isAdmin(email, password) {
+export function execute(operation, data) {
+
+      try {
+
+            const result = operation(data);
+            process.send(result);
+
+      } catch (error) {
+
+            process.send({
+                  error: error.message
+            });
+
+      }
+
+}
+
+export function isAdmin(data) {
+
+      const {
+            email,
+            password
+      } = data;
 
       const adminPass = process.env.ADMIN_PASSWORD;
 
@@ -15,16 +37,17 @@ export function isAdmin(email, password) {
       if (adminEmail !== undefined && adminPass !== undefined) {
 
             const admin = {
+
                   first_name: "Admin",
                   last_name: "Coder",
                   email: adminEmail,
                   age: 0,
                   password: createHash(adminPass),
                   role: "admin"
+
             };
 
             const validEmail = email === adminEmail;
-
             const validPassword = validatePassword(password, admin);
 
             if (validPassword && validEmail) {
@@ -35,58 +58,25 @@ export function isAdmin(email, password) {
 
                   return false;
 
-            };
+            }
 
       } else {
 
             return false;
 
-      };
+      }
 
-
-};
-
-export function checkSession(req, res, next) {
-
-      if (req.session && req.cookies.userData) {
-
-            next();
-
-      } else {
-
-            console.log("No hay ninguna sesión iniciada");
-            res.redirect('/login');
-
-      };
-
-};
-
-export function validateEmail(email) {
-
-      if (/^\w+([\.-]?\w+)*@(?:|hotmail|outlook|gmail|coder)\.(?:|com|es)+$/i.test(email) === false) {
-            return true;
-      } else {
-            return false;
-      };
 }
 
-export function checkGithubSession(req, res, next) {
 
-      const email = req.cookies.userData.email;
 
-      if (validateEmail(email)) {
+export function cfgSession(data) {
 
-            res.redirect('/profile');
-
-      } else {
-
-            next();
-
-      };
-
-};
-
-export function cfgSession(user, req, res) {
+      const {
+            user,
+            req,
+            res
+      } = data;
 
       if (user) {
 
@@ -142,7 +132,13 @@ export function cfgSession(user, req, res) {
 
 };
 
-export function cfgSessionGithub(user, req, res) {
+export function cfgSessionGithub(data) {
+
+      const {
+            user,
+            req,
+            res
+      } = data;
 
       if (user) {
 
@@ -161,6 +157,46 @@ export function cfgSessionGithub(user, req, res) {
       } else {
 
             res.redirect('/login');
+
+      };
+
+};
+
+export function checkSession(req, res, next) {
+
+      if (req.session && req.cookies.userData) {
+
+            next();
+
+      } else {
+
+            console.log("No hay ninguna sesión iniciada");
+            res.redirect('/login');
+
+      };
+
+};
+
+export function validateEmail(email) {
+
+      if (/^\w+([\.-]?\w+)*@(?:|hotmail|outlook|gmail|coder)\.(?:|com|es)+$/i.test(email) === false) {
+            return true;
+      } else {
+            return false;
+      };
+}
+
+export function checkGithubSession(req, res, next) {
+
+      const email = req.cookies.userData.email;
+
+      if (validateEmail(email)) {
+
+            res.redirect('/profile');
+
+      } else {
+
+            next();
 
       };
 

@@ -9,6 +9,10 @@ import {
       validatePassword
 } from '../utils.js';
 
+import {
+      fork
+} from 'child_process';
+
 import UsersManager from '../dao/dbManagers/users.js';
 
 import {
@@ -23,6 +27,7 @@ import {
       checkSession,
       isAdmin,
       validateEmail,
+      execute
 } from '../helpers/handleSessions.js';
 
 const usersManager = new UsersManager();
@@ -43,15 +48,31 @@ sessionsRouter.post('/login', async (req, res) => {
 
             validateData(!isValid, res, "Faltan campos obligatorios");
 
-            const user = await usersManager.loginUser(req.body);
+            const adminData = {
+                  ...req.body,
+            }
 
-            validateData(!user, res, "Error en el usuario o contraseña");
+            let user = isAdmin(adminData);
+
+            if (!user) {
+
+                  user = await usersManager.loginUser(req.body);
+
+                  validateData(!user, res, "Error en el usuario o contraseña");
+
+            }
 
             const isValidPassword = validatePassword(password, user);
 
             validateData(!isValidPassword, res, "Contraseña incorrecta");
 
-            cfgSession(user, req, res);
+            const data = {
+                  user,
+                  req,
+                  res
+            };
+
+            execute(cfgSession, data);
 
 
       } catch (error) {
@@ -90,7 +111,13 @@ sessionsRouter.get('/githubcallback', passport.authenticate('github', {
 
             const user = req.user;
 
-            cfgSessionGithub(user, req, res)
+            const data = {
+                  user,
+                  req,
+                  res
+            };
+
+            execute(cfgSessionGithub, data);
 
             res.redirect('/profile')
 
@@ -233,7 +260,13 @@ sessionsRouter.post('/profile', authToken, async (req, res) => {
 
             const userUpdated = await usersManager.getUser(userToUpdate.email, null);
 
-            cfgSession(userUpdated, req, res);
+            const data = {
+                  user: userUpdated,
+                  req,
+                  res
+            }
+
+            execute(cfgSession, data);
 
       } catch (error) {
 
